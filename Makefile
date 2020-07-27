@@ -10,8 +10,8 @@ flake:
 	flake8 .
 tests:
 	pytest
-testads:
-	pytest web/tests/test_ads.py
+testusers:
+	pytest rest/tests/user_tests.py
 clean-python:
 	rm -fr build
 	rm -fr dist
@@ -19,8 +19,8 @@ clean-python:
 	find . -name '*.pyo' -exec rm -f {} \;
 	find . -name '*~' -exec rm -f {} \;
 djangosettings:
-	export DJANGO_SETTINGS_MODULE=pythonistas.pythonistas.settings
+	export DJANGO_SETTINGS_MODULE=paxful.settings
 showurls:
 	python manage.py show_urls
 celery:
-	cd pythonistas && celery -A pythonistas worker -l info
+	celery -A paxful worker -l info
