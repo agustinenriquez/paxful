@@ -52,6 +52,7 @@ class WalletCreateView(LoginRequiredMixin, CreateView):
         if len(Wallet.objects.filter(user=self.request.user)) > 9:
             return self.success_url
         else:
+            # TODO return cannot create more wallets (limit 10) err
             return super().form_valid(form)
 
     def get_success_url(self):
