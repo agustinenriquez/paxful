@@ -17,6 +17,8 @@ class UserViewSet(viewsets.ModelViewSet):
         username = self.request.data['username']
         password = self.request.data['password']
         email = self.request.data['email']
+        obj = serializer.save()
+        Token.objects.create(user=obj)
         return super().perform_create(serializer)
 
 
