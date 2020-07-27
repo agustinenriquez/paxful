@@ -22,3 +22,7 @@ class Transfer(models.Model):
         self.code = ''.join(
             random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
         super().save(*args, **kwargs)
+
+
+class Transaction(models.Model):
+    pass

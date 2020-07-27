@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Transaction
-from web.models import Wallet
+from web.models import Wallet, Transaction
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
