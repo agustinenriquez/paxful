@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from web.models import Wallet, Transaction
 from rest_framework.authtoken.models import Token
@@ -7,9 +7,10 @@ from .models import Statictics
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField(required=False)
+
     class Meta:
         model = User
-        fields = ['username', 'token']
+        fields = ["username", "token"]
 
     def get_token(self, user):
         return Token.objects.get(user=user).key
@@ -18,25 +19,25 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Create and return a new `User` instance, given the validated data.
         """
-        email = self.initial_data['email']
-        password = self.initial_data['password']
-        username = self.initial_data['username']
+        email = self.initial_data["email"]
+        password = self.initial_data["password"]
+        username = self.initial_data["username"]
         return User.objects.create(username=username, email=email, password=password)
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Transaction
-        fields = ['origin_wallet', 'destination_wallet', 'code', 'amount']
+        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
 
 
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Wallet
-        fields = ['origin_wallet', 'destination_wallet', 'code', 'amount']
+        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Statictics
-        fields = ['origin_wallet', 'destination_wallet', 'code', 'amount']
+        fields = ["origin_wallet", "destination_wallet", "code", "amount"]

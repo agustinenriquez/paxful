@@ -1,8 +1,6 @@
-import requests
 import pytest
 import uuid
 from factories import UserFactory
-from django.urls import reverse
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
@@ -25,30 +23,32 @@ def db():
 
 @pytest.fixture
 def test_password():
-   return 'strong-test-pass'
+    return "strong-test-pass"
 
 
 @pytest.fixture
 def create_user(db, test_password):
-   def make_user(**kwargs):
-       kwargs['password'] = test_password
-       if 'username' not in kwargs:
-           kwargs['username'] = str(uuid.uuid4())
-       return User.objects.create_user(**kwargs)
-   return make_user
+    def make_user(**kwargs):
+        kwargs["password"] = test_password
+        if "username" not in kwargs:
+            kwargs["username"] = str(uuid.uuid4())
+        return User.objects.create_user(**kwargs)
+
+    return make_user
 
 
 @pytest.fixture
 def api_client():
-   from rest_framework.test import APIClient
-   return APIClient()
+    from rest_framework.test import APIClient
+
+    return APIClient()
 
 
 @pytest.fixture
 def get_or_create_token(db, create_user):
-   user = create_user()
-   token, _ = Token.objects.get_or_create(user=user)
-   return token
+    user = create_user()
+    token, _ = Token.objects.get_or_create(user=user)
+    return token
 
 
 def test_user_is_active():
@@ -58,7 +58,9 @@ def test_user_is_active():
 
 def test_create_user_using_post_request(api_client):
     user = UserFactory.create()
-    r = api_client.post("http://127.0.0.1/users/", {'username': user.username, 'password': user.password, 'email': user.email})
+    r = api_client.post(
+        "http://127.0.0.1/users/", {"username": user.username, "password": user.password, "email": user.email}
+    )
     if r.status_code == 201:
         assert True
     else:
@@ -67,6 +69,7 @@ def test_create_user_using_post_request(api_client):
 
 def test_create_user_and_get_token(api_client, get_or_create_token):
     user = UserFactory.create()
-    r = api_client.post("http://127.0.0.1/users/", {'username': user.username, 'password': user.password, 'email': user.email})
-    token = get_or_create_token
-    assert token is not None
+    response = api_client.post(
+        "http://127.0.0.1/users/", {"username": user.username, "password": user.password, "email": user.email}
+    )
+    assert response.status_code == 200

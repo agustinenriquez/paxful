@@ -1,8 +1,11 @@
-import django; django.setup()
+import django
+
 import factory
 import factory.fuzzy
 from django.contrib.auth.models import User
 from web.models import Wallet
+
+django.setup()
 
 
 factory.Faker._DEFAULT_LOCALE = "en_US"
@@ -22,5 +25,5 @@ class WalletFactory(factory.Factory):
         model = Wallet
 
     user = UserFactory.create()
-    balance = factory.Faker('balance')
-    alias = factory.Faker('alias')
+    balance = factory.Faker("balance")
+    alias = factory.Faker("alias")
