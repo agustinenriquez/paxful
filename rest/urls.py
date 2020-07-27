@@ -1,10 +1,10 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import UserViewSet
+from .views import UserViewSet, WalletViewSet, TransactionsViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'wallets', WalletsViewSet)
+router.register(r'wallets', WalletViewSet)
 router.register(r'transactions', TransactionsViewSet)
 router.register(r'statistics', WalletsViewSet)
 
