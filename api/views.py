@@ -74,4 +74,4 @@ class StaticticsViewSet(viewsets.ViewSet):
         paxful_profit = Platform.objects.first().profit
         total_transactions = Transaction.objects.all().count()
 
-        return Response({"transactions": total_transactions, "profit": paxful_profit})
+        return Response({"transactions": total_transactions, "profit": str(paxful_profit)})
