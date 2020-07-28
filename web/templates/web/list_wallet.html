@@ -1,5 +1,5 @@
 {% extends 'web/base.html' %}
-{% block walletlist %}   
+{% block walletlist %}
         {% for wallet in wallets %}
         <div>
             <p>{{ wallet.alias }} - {{ wallet.balance }} </p>

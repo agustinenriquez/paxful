@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from web.models import Wallet, Transaction
 from rest_framework.authtoken.models import Token
-from .models import Statictics
+from .models import Statictics, Transaction, Wallet
+from rest_framework.exceptions import APIException
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "token"]
+        fields = ["token"]
 
     def get_token(self, user):
         return Token.objects.get(user=user).key
@@ -19,6 +19,11 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Create and return a new `User` instance, given the validated data.
         """
+        # try:
+        #     User.objects.get(username=self.initial_data['username']).exists()
+        # except APIException as apiException:
+        #     raise apiException
+
         email = self.initial_data["email"]
         password = self.initial_data["password"]
         username = self.initial_data["username"]
@@ -35,6 +40,16 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Wallet
         fields = ["origin_wallet", "destination_wallet", "code", "amount"]
+
+    def create(self, validated_data):
+        """
+        Create and return a new `User` instance, given the validated data.
+        """
+        username = self.initial_data["username"]
+        if Wallet.objects.filter(user_username=username).count() < 9:
+            return Wallet.objects.create(username=username)
+        else:
+            raise APIException
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):

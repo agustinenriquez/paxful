@@ -18,6 +18,7 @@ clean-python:
 	find . -name '*.pyc' -exec rm -f {} \;
 	find . -name '*.pyo' -exec rm -f {} \;
 	find . -name '*~' -exec rm -f {} \;
+	find . -name '__pycache__' -exec rm -r -f {} \;
 djangosettings:
 	export DJANGO_SETTINGS_MODULE=paxful.settings
 showurls:

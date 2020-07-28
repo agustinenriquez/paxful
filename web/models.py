@@ -19,8 +19,7 @@ class Transfer(models.Model):
     code = models.CharField(max_length=50, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        self.code = ''.join(
-            random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+        self.code = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
         super().save(*args, **kwargs)
 
 

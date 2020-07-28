@@ -1,12 +1,11 @@
-from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from .forms import UserForm, WalletForm, TransferForm
+from .forms import UserForm, TransferForm
 from .models import Wallet, Transfer
 
 
@@ -27,7 +26,6 @@ class UserCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context["has_wallets"] = Wallet.objects.filter(user=self.request.user).exists()
         return context
-    
 
     def get_success_url(self):
         return self.success_url
@@ -66,7 +64,7 @@ class TransferCreateView(LoginRequiredMixin, CreateView):
     template_name = "web/wallet-transfer.html"
 
     def get_context_data(self, **kwargs):
-        kwargs["wallet"] = Wallet.objects.get(pk=self.kwargs['pk'])
+        kwargs["wallet"] = Wallet.objects.get(pk=self.kwargs["pk"])
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -87,25 +85,24 @@ class WalletListView(ListView):
 
 def post_users(request):
     """
-        POST Endpoint to create users. If request is not POST it will redirect to the index view. 
+        POST Endpoint to create users. If request is not POST it will redirect to the index view.
     """
-    if request.method == 'POST':
+    if request.method == "POST":
         User.objects.create(
-            username=request.POST['username'],
-            password=request.POST['password'],
-            email=request.POST['email'])
+            username=request.POST["username"], password=request.POST["password"], email=request.POST["email"]
+        )
     else:
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse("index"))
 
 
 def post_wallets(request):
     """
-        POST Endpoint to create wallets. If request is not POST it will redirect to the index view. 
+        POST Endpoint to create wallets. If request is not POST it will redirect to the index view.
     """
-    if request.method == 'POST':
+    if request.method == "POST":
         pass
     else:
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse("index"))
 
 
 def get_wallet_address(request):
