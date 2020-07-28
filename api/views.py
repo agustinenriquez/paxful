@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import UserSerializer, TransactionSerializer, WalletSerializer, StaticticsSerializer
 from .models import Transaction, Wallet, Statictics
@@ -51,6 +52,8 @@ class StaticticsViewSet(viewsets.ModelViewSet):
 
 
 class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         content = {"message": "Hello world."}
         return Response(content)
