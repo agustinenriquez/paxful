@@ -68,6 +68,10 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         destination_wallet = Wallet.objects.get(address=destination_address)
         origin_wallet = Wallet.objects.get(address=origin_address)
 
+        if origin_wallet.amount < amount:
+            # Doesnt have enough funds.
+            raise ValidationError
+
         if destination_address in user_wallets_addresses:
             destination_wallet.balance += amount
             destination_wallet.save()
