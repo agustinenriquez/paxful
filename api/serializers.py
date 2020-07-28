@@ -70,7 +70,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 
         if origin_wallet.amount < amount:
             # Doesnt have enough funds.
-            raise ValidationError
+            raise ValidationError("Wallet does not have enough funds.")
 
         if destination_address in user_wallets_addresses:
             destination_wallet.balance += amount
