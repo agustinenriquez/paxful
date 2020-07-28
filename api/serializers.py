@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Statictics, Transaction, Wallet
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
 from .helpers import get_current_BTC_to_USD_price
@@ -13,17 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "token"]
+        fields = ["token"]
 
     def create(self, validated_data):
         """
-        Create and return a new `User` instance, given the validated data.
+        Create and return a new token key, given the validated data.
         """
-        try:
-            User.objects.get(username=self.context["request"].user.username).exists()
-        except APIException as apiException:
-            raise apiException
-
         email = self.initial_data["email"]
         password = self.initial_data["password"]
         username = self.initial_data["username"]
