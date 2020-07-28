@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import UserSerializer, TransactionSerializer, WalletSerializer, StaticticsSerializer
@@ -16,15 +15,20 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(id=self.request.user.pk)
+        return queryset
+
 
 class WalletViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
 
-    queryset = Wallet.objects.all().order_by("-date_joined")
+    queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
+    lookup_field = "address"
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(user=self.request.user)
@@ -38,7 +42,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     queryset = Transaction.objects.all().order_by("-date_joined")
     serializer_class = TransactionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(user=self.request.user)
+        return queryset
 
 
 class StaticticsViewSet(viewsets.ModelViewSet):
@@ -48,7 +56,7 @@ class StaticticsViewSet(viewsets.ModelViewSet):
 
     queryset = Statictics.objects.all().order_by("-date_joined")
     serializer_class = StaticticsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
 
 class HelloView(APIView):

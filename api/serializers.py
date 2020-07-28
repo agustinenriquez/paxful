@@ -1,33 +1,33 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 from .models import Statictics, Transaction, Wallet
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
+from decimal import Decimal
 
 
 class UserSerializer(serializers.ModelSerializer):
-    token = serializers.SerializerMethodField(required=False)
+    # token = serializers.SerializerMethodField(required=False)
 
     class Meta:
         model = User
-        fields = ["token"]
+        fields = ["username", "email"]
 
-    def get_token(self, user):
-        return Token.objects.get(user=user).key
+    # def get_token(self, user):
+    #     return Token.objects.get(user=user).key
 
-    def create(self, validated_data):
-        """
-        Create and return a new `User` instance, given the validated data.
-        """
-        # try:
-        #     User.objects.get(username=self.initial_data['username']).exists()
-        # except APIException as apiException:
-        #     raise apiException
+    # def create(self, validated_data):
+    #     """
+    #     Create and return a new `User` instance, given the validated data.
+    #     """
+    #     # try:
+    #     #     User.objects.get(username=self.initial_data['username']).exists()
+    #     # except APIException as apiException:
+    #     #     raise apiException
 
-        email = self.initial_data["email"]
-        password = self.initial_data["password"]
-        username = self.initial_data["username"]
-        return User.objects.create(username=username, email=email, password=password)
+    #     email = self.initial_data["email"]
+    #     password = self.initial_data["password"]
+    #     username = self.initial_data["username"]
+    #     return User.objects.create(username=username, email=email, password=password)
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,17 +39,18 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Wallet
-        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
+        fields = "__all__"
+        extra_kwargs = {"user": {"read_only": True}, "url": {"lookup_field": "address"}}
 
     def create(self, validated_data):
         """
-        Create and return a new `User` instance, given the validated data.
+        Create and return a new `Wallet` instance, given the validated data.
         """
-        username = self.initial_data["username"]
-        if Wallet.objects.filter(user_username=username).count() < 9:
-            return Wallet.objects.create(username=username)
-        else:
-            raise APIException
+        user = self.context["request"].user
+        # Limit user to 10 wallets
+        if Wallet.objects.filter(user=user).count() > 9:
+            raise ValidationError
+        return Wallet.objects.create(user=user, balance=Decimal("1.0"))
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
