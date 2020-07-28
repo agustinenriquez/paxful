@@ -7,7 +7,7 @@ import random
 import string
 from decimal import Decimal
 import uuid
-from helpers import get_current_BTC_to_USD_price
+from .helpers import get_current_BTC_to_USD_price
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -57,8 +57,8 @@ class Platform(models.Model):
 
 
 class Statictics(models.Model):
-    platform = models.OneToOneField("Platform", on_delete=models.CASCADE, null=False, blank=False)
-    transactions = models.ForeignKey("Transactions", on_delete=models.CASCADE, null=False, blank=False)
+    platform = models.ForeignKey("Platform", on_delete=models.CASCADE, null=False, blank=False, default=None)
+    transactions = models.ForeignKey("Transaction", on_delete=models.CASCADE, null=True, blank=False, default=None)
 
     def __str__(self):
-        return self.platform
+        return self.platform.name

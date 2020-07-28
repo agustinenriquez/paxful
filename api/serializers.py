@@ -85,7 +85,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
             origin_wallet.balance -= amount
             origin_wallet.save()
 
-            paxful = Platform.objects.get(id=1)
+            paxful = Platform.objects.get(name="paxful")
             paxful.profit += fee
 
             return Transaction.objects.create(
@@ -94,6 +94,15 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
+    profit = serializers.SerializerMethodField(required=False)
+    total_transactions = serializers.SerializerMethodField(required=False)
+
     class Meta:
         model = Statictics
-        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
+        fields = ["profit", "total_transactions"]
+
+    def get_profit(self, obj):
+        return obj.platform.profit
+
+    def get_total_transactions(self, obj):
+        return Transaction.objects.all().count()

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializers import UserSerializer, TransactionSerializer, WalletSerializer, StaticticsSerializer
 from .models import Transaction, Wallet, Statictics
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -68,6 +68,6 @@ class StaticticsViewSet(viewsets.ModelViewSet):
     API endpoint that allows stactictics to be viewed by admins.
     """
 
-    queryset = Statictics.objects.first()
+    queryset = Statictics.objects.all()
     serializer_class = StaticticsSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
