@@ -43,7 +43,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(origin_address__in=Wallet.objects.filter(user=self.request.user))
+        queryset = (
+            super()
+            .get_queryset()
+            .filter(origin_address__in=Wallet.objects.filter(user=self.request.user).values_list("address", flat=True))
+        )
         return queryset
 
 

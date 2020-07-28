@@ -58,14 +58,15 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         origin_address = self.validated_data["origin_address"]
         destination_address = self.validated_data["destination_address"]
         amount = self.validated_data["amount"]
-        user_wallets = Wallet.objects.filter(user=user).values_list("address", flat=True)
+        user_wallets_addresses = Wallet.objects.filter(user=user).values_list("address", flat=True)
 
-        if destination_address in user_wallets:
+        if destination_address in user_wallets_addresses:
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
         else:
-            amount = amount * WALLET_TRANSFER_COMMISION_RATE
+            fee = amount * WALLET_TRANSFER_COMMISION_RATE
+            amount = amount - fee
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
