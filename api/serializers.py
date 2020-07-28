@@ -1,35 +1,30 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Statictics, Transaction, Wallet
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
 from .helpers import get_current_BTC_to_USD_price
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # token = serializers.SerializerMethodField(required=False)
-
     class Meta:
         model = User
         fields = ["username", "email"]
 
-    # def get_token(self, user):
-    #     return Token.objects.get(user=user).key
+    def create(self, validated_data):
+        """
+        Create and return a new `User` instance, given the validated data.
+        """
+        try:
+            User.objects.get(username=self.initial_data["username"]).exists()
+        except APIException as apiException:
+            raise apiException
 
-    # def create(self, validated_data):
-    #     """
-    #     Create and return a new `User` instance, given the validated data.
-    #     """
-    #     # try:
-    #     #     User.objects.get(username=self.initial_data['username']).exists()
-    #     # except APIException as apiException:
-    #     #     raise apiException
-
-    #     email = self.initial_data["email"]
-    #     password = self.initial_data["password"]
-    #     username = self.initial_data["username"]
-    #     return User.objects.create(username=username, email=email, password=password)
+        email = self.initial_data["email"]
+        password = self.initial_data["password"]
+        username = self.initial_data["username"]
+        return User.objects.create(username=username, email=email, password=password)
 
 
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
@@ -66,10 +61,9 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         amount = self.validated_data["amount"]
         user_wallets_addresses = Wallet.objects.filter(user=user).values_list("address", flat=True)
         destination_wallet = Wallet.objects.get(address=destination_address)
-        origin_wallet = Wallet.objects.get(address=origin_address)
+        origin_wallet = Wallet.objects.filter(address=origin_address).filter(amount__gte=amount).first()
 
-        if origin_wallet.amount < amount:
-            # Doesnt have enough funds.
+        if not origin_wallet.amount:
             raise ValidationError("Wallet does not have enough funds.")
 
         if destination_address in user_wallets_addresses:
@@ -83,7 +77,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
             )
         else:
             fee = amount * WALLET_TRANSFER_COMMISION_RATE
-            amount = amount - fee
+            amount -= fee
             destination_wallet.balance += amount
             destination_wallet.save()
             origin_wallet.balance -= amount
