@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Statictics, Transaction, Wallet
+from .models import Platform, Statictics, Transaction, Wallet
 from rest_framework.exceptions import ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
@@ -84,6 +84,9 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
             destination_wallet.save()
             origin_wallet.balance -= amount
             origin_wallet.save()
+
+            paxful = Platform.objects.get(id=1)
+            paxful.profit += fee
 
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount

@@ -68,6 +68,6 @@ class StaticticsViewSet(viewsets.ModelViewSet):
     API endpoint that allows stactictics to be viewed by admins.
     """
 
-    queryset = Statictics.objects.all().order_by("-date_joined")
+    queryset = Statictics.objects.first()
     serializer_class = StaticticsSerializer
     permission_classes = (IsAuthenticated,)
