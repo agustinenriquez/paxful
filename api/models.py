@@ -39,6 +39,9 @@ class Transaction(models.Model):
     amount = models.DecimalField(decimal_places=25, default=0, max_digits=50)
     code = models.CharField(max_length=50, blank=True)
 
+    def __str__(self):
+        return self.code
+
     def save(self, *args, **kwargs):
         self.code = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
         super().save(*args, **kwargs)

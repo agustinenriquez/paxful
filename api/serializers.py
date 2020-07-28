@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Statictics, Transaction, Wallet
 from rest_framework.exceptions import ValidationError
 from decimal import Decimal
+from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,6 +55,22 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Transaction
         fields = ["origin_wallet", "destination_wallet", "code", "amount"]
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        origin_wallet = self.validated_data["origin_wallet"]
+        destination_wallet = self.validated_data["destination_wallet"]
+        amount = self.validated_data["amount"]
+        user_wallets = Wallet.objects.filter(user=user)
+        if destination_wallet is not user_wallets:
+            amount = amount * 100 / WALLET_TRANSFER_COMMISION_RATE
+            return Transaction.objects.create(
+                origin_wallet=origin_wallet, destination_wallet=destination_wallet, amount=amount
+            )
+        else:
+            return Transaction.objects.create(
+                origin_wallet=origin_wallet, destination_wallet=destination_wallet, amount=amount
+            )
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
