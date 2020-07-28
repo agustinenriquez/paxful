@@ -4,6 +4,7 @@ from .models import Statictics, Transaction, Wallet
 from rest_framework.exceptions import ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
+from .helpers import get_current_BTC_to_USD_price
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,9 +33,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
+    balance_in_usd = serializers.SerializerMethodField(required=False)
+
     class Meta:
         model = Wallet
-        fields = "__all__"
+        fields = ["balance", "balance_in_usd"]
         extra_kwargs = {"user": {"read_only": True}, "url": {"lookup_field": "address"}}
 
     def create(self, validated_data):
@@ -46,6 +49,9 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
         if Wallet.objects.filter(user=user).count() > 9:
             raise ValidationError
         return Wallet.objects.create(user=user, balance=Decimal("1.0"))
+
+    def get_balance_in_usd(self, obj):
+        return get_current_BTC_to_USD_price()
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,14 +65,26 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         destination_address = self.validated_data["destination_address"]
         amount = self.validated_data["amount"]
         user_wallets_addresses = Wallet.objects.filter(user=user).values_list("address", flat=True)
+        destination_wallet = Wallet.objects.get(address=destination_address)
+        origin_wallet = Wallet.objects.get(address=origin_address)
 
         if destination_address in user_wallets_addresses:
+            destination_wallet.balance += amount
+            destination_wallet.save()
+            origin_wallet.balance -= amount
+            origin_wallet.save()
+
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
         else:
             fee = amount * WALLET_TRANSFER_COMMISION_RATE
             amount = amount - fee
+            destination_wallet.balance += amount
+            destination_wallet.save()
+            origin_wallet.balance -= amount
+            origin_wallet.save()
+
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )

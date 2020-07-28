@@ -29,7 +29,7 @@ class WalletViewSet(viewsets.ModelViewSet):
     lookup_field = "address"
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(id=self.request.user.pk)
+        queryset = super().get_queryset().filter(user=self.request.user)
         return queryset
 
 

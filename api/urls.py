@@ -8,6 +8,7 @@ router.register(r"wallets", WalletViewSet)
 router.register(r"transactions", TransactionViewSet)
 router.register(r"statistics", StaticticsViewSet)
 
+
 urlpatterns = [
     path("", include(router.urls)),
 ]
