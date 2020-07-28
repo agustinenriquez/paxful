@@ -5,19 +5,22 @@ from rest_framework.exceptions import APIException, ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
 from .helpers import get_current_BTC_to_USD_price
+from rest_framework.authtoken.models import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField(required=False)
+
     class Meta:
         model = User
-        fields = ["username", "email"]
+        fields = ["username", "email", "token"]
 
     def create(self, validated_data):
         """
         Create and return a new `User` instance, given the validated data.
         """
         try:
-            User.objects.get(username=self.initial_data["username"]).exists()
+            User.objects.get(username=self.context["request"].user.username).exists()
         except APIException as apiException:
             raise apiException
 
@@ -25,6 +28,10 @@ class UserSerializer(serializers.ModelSerializer):
         password = self.initial_data["password"]
         username = self.initial_data["username"]
         return User.objects.create(username=username, email=email, password=password)
+
+    def get_token(self, obj):
+        token, created = Token.objects.get_or_create(user=obj)
+        return token.key
 
 
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
