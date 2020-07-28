@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Platform, Statictics, Transaction, Wallet
+from .models import Platform, Transaction, Wallet
 from rest_framework.exceptions import ValidationError
 from decimal import Decimal
 from paxful.settings import WALLET_TRANSFER_COMMISION_RATE
@@ -63,9 +63,9 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         amount = self.validated_data["amount"]
         user_wallets_addresses = Wallet.objects.filter(user=user).values_list("address", flat=True)
         destination_wallet = Wallet.objects.get(address=destination_address)
-        origin_wallet = Wallet.objects.filter(address=origin_address).filter(amount__gte=amount).first()
+        origin_wallet = Wallet.objects.filter(address=origin_address).filter(balance__gte=amount).first()
 
-        if not origin_wallet.amount:
+        if not origin_wallet.balance:
             raise ValidationError("Wallet does not have enough funds.")
 
         if destination_address in user_wallets_addresses:
@@ -87,22 +87,8 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 
             paxful = Platform.objects.get(name="paxful")
             paxful.profit += fee
+            paxful.save()
 
             return Transaction.objects.create(
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
-
-
-class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
-    profit = serializers.SerializerMethodField(required=False)
-    total_transactions = serializers.SerializerMethodField(required=False)
-
-    class Meta:
-        model = Statictics
-        fields = ["profit", "total_transactions"]
-
-    def get_profit(self, obj):
-        return obj.platform.profit
-
-    def get_total_transactions(self, obj):
-        return Transaction.objects.all().count()

@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import UserSerializer, TransactionSerializer, WalletSerializer, StaticticsSerializer
-from .models import Transaction, Wallet, Statictics
+from .serializers import UserSerializer, TransactionSerializer, WalletSerializer
+from .models import Transaction, Wallet, Platform
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -63,11 +63,15 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class StaticticsViewSet(viewsets.ModelViewSet):
+class StaticticsViewSet(viewsets.ViewSet):
     """
-    API endpoint that allows stactictics to be viewed by admins.
+    API endpoint that allows statictics to be viewed by admins.
     """
 
-    queryset = Statictics.objects.all()
-    serializer_class = StaticticsSerializer
     permission_classes = (IsAdminUser,)
+
+    def list(self, request, format=None):
+        paxful_profit = Platform.objects.first().profit
+        total_transactions = Transaction.objects.all().count()
+
+        return Response({"transactions": total_transactions, "profit": paxful_profit})

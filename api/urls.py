@@ -6,7 +6,7 @@ router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"wallets", WalletViewSet)
 router.register(r"transactions", TransactionViewSet)
-router.register(r"statistics", StaticticsViewSet)
+router.register(r"statistics", StaticticsViewSet, basename="statistics")
 
 wallet_router = routers.NestedSimpleRouter(router, r"wallets", lookup="wallets")
 wallet_router.register(r"transactions", TransactionViewSet)
