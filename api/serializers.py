@@ -49,28 +49,25 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
-    origin_wallet = WalletSerializer(many=False)
-    destination_wallet = WalletSerializer(many=False)
-
     class Meta:
         model = Transaction
-        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
+        fields = ["origin_address", "destination_address", "code", "amount"]
 
     def create(self, validated_data):
         user = self.context["request"].user
-        origin_wallet = self.validated_data["origin_wallet"]
-        destination_wallet = self.validated_data["destination_wallet"]
+        origin_address = self.validated_data["origin_address"]
+        destination_address = self.validated_data["destination_address"]
         amount = self.validated_data["amount"]
-        user_wallets = Wallet.objects.filter(user=user)
+        user_wallets = Wallet.objects.filter(user=user).values_list("address", flat=True)
 
-        if destination_wallet not in user_wallets:
-            amount = amount * 100 / WALLET_TRANSFER_COMMISION_RATE
+        if destination_address in user_wallets:
             return Transaction.objects.create(
-                origin_wallet=origin_wallet, destination_wallet=destination_wallet, amount=amount
+                origin_address=origin_address, destination_address=destination_address, amount=amount
             )
         else:
+            amount = amount * WALLET_TRANSFER_COMMISION_RATE
             return Transaction.objects.create(
-                origin_wallet=origin_wallet, destination_wallet=destination_wallet, amount=amount
+                origin_address=origin_address, destination_address=destination_address, amount=amount
             )
 
 

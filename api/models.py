@@ -32,10 +32,8 @@ class Wallet(models.Model):
 
 
 class Transaction(models.Model):
-    origin_wallet = models.ForeignKey("Wallet", related_name="origin_wallet", on_delete=models.CASCADE, default=None)
-    destination_wallet = models.ForeignKey(
-        "Wallet", related_name="destination_wallet", on_delete=models.CASCADE, default=None
-    )
+    origin_address = models.UUIDField(default=None)
+    destination_address = models.UUIDField(default=None)
     amount = models.DecimalField(decimal_places=25, default=0, max_digits=50)
     code = models.CharField(max_length=50, blank=True)
 
