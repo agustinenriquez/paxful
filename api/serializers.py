@@ -30,12 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
     #     return User.objects.create(username=username, email=email, password=password)
 
 
-class TransactionSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
-
-
 class WalletSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Wallet
@@ -51,6 +45,15 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
         if Wallet.objects.filter(user=user).count() > 9:
             raise ValidationError
         return Wallet.objects.create(user=user, balance=Decimal("1.0"))
+
+
+class TransactionSerializer(serializers.HyperlinkedModelSerializer):
+    origin_wallet = WalletSerializer(many=True)
+    destination_wallet = WalletSerializer(many=True)
+
+    class Meta:
+        model = Transaction
+        fields = ["origin_wallet", "destination_wallet", "code", "amount"]
 
 
 class StaticticsSerializer(serializers.HyperlinkedModelSerializer):
