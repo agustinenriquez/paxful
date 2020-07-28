@@ -20,7 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class WalletViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows wallets to be viewed or created by registered users.
     """
 
     queryset = Wallet.objects.all()
@@ -35,7 +35,7 @@ class WalletViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows transactions to be viewed or created by registered users.
     """
 
     queryset = Transaction.objects.all()
@@ -53,7 +53,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
 class StaticticsViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows stactictics to be viewed by admins.
     """
 
     queryset = Statictics.objects.all().order_by("-date_joined")
