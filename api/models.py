@@ -31,16 +31,14 @@ class Wallet(models.Model):
         return self.user.username
 
 
-class Transfer(models.Model):
-    origin_wallet = models.ForeignKey("Wallet", related_name="origin_wallet", on_delete=models.CASCADE)
-    destination_wallet = models.ForeignKey("Wallet", related_name="destination_wallet", on_delete=models.CASCADE)
+class Transaction(models.Model):
+    origin_wallet = models.ForeignKey("Wallet", related_name="origin_wallet", on_delete=models.CASCADE, default=None)
+    destination_wallet = models.ForeignKey(
+        "Wallet", related_name="destination_wallet", on_delete=models.CASCADE, default=None
+    )
     amount = models.DecimalField(decimal_places=25, default=0, max_digits=50)
     code = models.CharField(max_length=50, blank=True)
 
     def save(self, *args, **kwargs):
         self.code = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
         super().save(*args, **kwargs)
-
-
-class Transaction(models.Model):
-    pass
