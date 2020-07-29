@@ -25,6 +25,7 @@ SECRET_KEY = "d#t=+2l!3uz#ab8b52oa10*mwv6$h1g1akgrv&70p()+6=sts="
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEBUG_PROPAGATE_EXCEPTIONS = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -92,9 +93,16 @@ INTERNAL_IPS = [
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": os.path.join(BASE_DIR, "db.sqlite3")}}
-
-
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "db",
+        "PORT": "",
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 

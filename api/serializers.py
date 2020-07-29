@@ -13,16 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "token"]
-
-    def create(self, validated_data):
-        """
-        Create and return a new token key, given the validated data.
-        """
-        email = self.initial_data["email"]
-        password = self.initial_data["password"]
-        username = self.initial_data["username"]
-        return User.objects.create(username=username, email=email, password=password)
+        fields = ["username", "token"]
 
     def get_token(self, obj):
         token, created = Token.objects.get_or_create(user=obj)
