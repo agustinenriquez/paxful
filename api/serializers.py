@@ -48,7 +48,7 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
         return Wallet.objects.create(user=user, balance=Decimal("1.0"))
 
     def get_balance_in_usd(self, obj):
-        return get_current_BTC_to_USD_price()
+        return obj.balance * Decimal(get_current_BTC_to_USD_price().replace(",", ""))
 
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):

@@ -26,7 +26,7 @@ SECRET_KEY = "d#t=+2l!3uz#ab8b52oa10*mwv6$h1g1akgrv&70p()+6=sts="
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["testserver", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -125,6 +125,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+STATIC_ROOT = ""
 
 # Paxful enviroment variables
 
