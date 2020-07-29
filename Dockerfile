@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN echo 'export PS1="\[\e[36m\]paxtshell>\[\e[m\] "' >> /root/.bashrc
 
-COPY requirements.txt requirements_dev.txt ./
+COPY requirements.txt ./
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         build-essential \
@@ -15,7 +15,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install -U pip
-RUN pip install -r requirements_dev.txt
+RUN pip install -r requirements.txt
 
 WORKDIR /code
 ENV PYTHONPATH /code:$PYTHONPATH

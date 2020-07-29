@@ -1,8 +1,8 @@
 How to install & use:
 
     - Build and run:
-        sudo docker-compose up --build
-        sudo docker-compose run web
+        docker-compose up -d
+        docker-compose logs -f web
 
     - Run migrations and destroy container
         docker-compose run --rm web python manage.py makemigrations

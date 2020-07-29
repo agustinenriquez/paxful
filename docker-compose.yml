@@ -22,6 +22,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - WDB_SOCKET_SERVER=wdb
       - WDB_NO_BROWSER_AUTO_OPEN=True
+      - DJANGO_SETTINGS_MODULE=paxful.settings
     links:
       - db
       - wdb

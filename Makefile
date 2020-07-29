@@ -1,15 +1,15 @@
 runserver:
-	python manage.py runserver
+	docker-compose up -d
 migrations:
-	python manage.py makemigrations
+	docker-compose run --rm web python manage.py makemigrations
 migrate:
-	python manage.py migrate
+	docker-compose run --rm web python manage.py migrate
 shell_plus:
-	python manage.py shell_plus
+	docker-compose run --rm web python manage.py shell_plus
 flake:
-	flake8 .
+	docker-compose run --rm web flake8 .
 tests:
-	pytest
+	docker-compose run --rm web pytest
 clean-python:
 	rm -fr build
 	rm -fr dist
@@ -17,7 +17,5 @@ clean-python:
 	find . -name '*.pyo' -exec rm -f {} \;
 	find . -name '*~' -exec rm -f {} \;
 	find . -name '__pycache__' -exec rm -r -f {} \;
-djangosettings:
-	export DJANGO_SETTINGS_MODULE=paxful.settings
 showurls:
-	python manage.py show_urls
+	docker-compose run --rm web  python manage.py show_urls
