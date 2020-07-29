@@ -78,13 +78,16 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
         else:
+            # Calculate Fee.
             fee = amount * WALLET_TRANSFER_COMMISION_RATE
             amount -= fee
+            # Add funds to destination wallet.
             destination_wallet.balance += amount
             destination_wallet.save()
+            # Substract from origin wallet.
             origin_wallet.balance -= amount
             origin_wallet.save()
-
+            # Add fee to paxful profit.
             paxful = Platform.objects.get(name="paxful")
             paxful.profit += fee
             paxful.save()
