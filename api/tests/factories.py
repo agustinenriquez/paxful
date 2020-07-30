@@ -12,6 +12,20 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = "agustest@gmail.com"
 
 
+class SuperUserFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = "auth.User"
+        django_get_or_create = ("username",)
+
+    username = "adminagustest"
+    password = factory.PostGenerationMethodCall("set_password", "aguspass")
+    email = "adminagustest@gmail.com"
+
+    is_superuser = True
+    is_staff = True
+    is_active = True
+
+
 class WalletFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "api.Wallet"
