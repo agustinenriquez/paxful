@@ -11,5 +11,12 @@ How to install & use:
     - Start a bash inside the container:
         docker-compose run --rm web bash
 
+    - Create paxul platform object:
+        python manage.py shell_plus
+        Platform.objects.create(name="paxful")
+
+    - Create superuser
+        admin = User.objects.create_superuser(username="admin", password="admin123")
+
     - Create a user:
         http post http://0.0.0.0:8000/users/ username=testuser password=testuser email=testuser@gmail.com
