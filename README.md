@@ -18,5 +18,8 @@ How to install & use:
     - Create superuser
         admin = User.objects.create_superuser(username="admin", password="admin123")
 
-    - Create a user:
+    - Create a user using httpie:
         http post http://0.0.0.0:8000/users/ username=testuser password=testuser email=testuser@gmail.com
+
+    - Run tests:
+        make tests or docker-compose run --rm web pytest
