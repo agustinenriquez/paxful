@@ -16,6 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["username", "token"]
 
     def get_token(self, obj):
+        """
+            Create a token instance and return its key.
+        """
         token, created = Token.objects.get_or_create(user=obj)
         return token.key
 
@@ -33,7 +36,7 @@ class WalletSerializer(serializers.HyperlinkedModelSerializer):
         Create and return a new `Wallet` instance, given the validated data.
         """
         user = self.context["request"].user
-        # Limit user to 10 wallets
+        # Limit user to 10 wallets.
         if Wallet.objects.filter(user=user).count() > 9:
             raise ValidationError
         return Wallet.objects.create(user=user, balance=Decimal("1.0"))
@@ -48,18 +51,24 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["origin_address", "destination_address", "code", "amount"]
 
     def create(self, validated_data):
+        """
+            Create a new 'Transaction' instance, given the validated data.
+        """
         user = self.context["request"].user
+        # Get values for later processing.
         origin_address = self.validated_data["origin_address"]
         destination_address = self.validated_data["destination_address"]
         amount = self.validated_data["amount"]
+        # Get wallets to be used in transaction.
         user_wallets_addresses = Wallet.objects.filter(user=user).values_list("address", flat=True)
         destination_wallet = Wallet.objects.get(address=destination_address)
         origin_wallet = Wallet.objects.filter(address=origin_address).filter(balance__gte=amount).first()
-
+        # Raise error if funds in wallets are not enough to make a transfer.
         if not origin_wallet.balance:
             raise ValidationError("Wallet does not have enough funds.")
-
+        # Check if wallet is inside user's wallets.
         if destination_address in user_wallets_addresses:
+            # Fee is not calculated since destination_wallet is a user's wallet.
             destination_wallet.balance += amount
             destination_wallet.save()
             origin_wallet.balance -= amount
@@ -69,7 +78,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
                 origin_address=origin_address, destination_address=destination_address, amount=amount
             )
         else:
-            # Calculate Fee.
+            # Calculate fee.
             fee = amount * WALLET_TRANSFER_COMMISION_RATE
             amount -= fee
             # Add funds to destination wallet.
