@@ -23,3 +23,6 @@ How to install & use:
 
     - Run tests:
         make tests or docker-compose run --rm web pytest
+
+    - Documentation:
+        http://localhost:8000/docs/
