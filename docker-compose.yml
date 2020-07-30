@@ -4,6 +4,7 @@ services:
   db:
     image: postgres
     environment:
+      - POSTGRES_NAME=postgres
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -20,6 +21,7 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
       - WDB_SOCKET_SERVER=wdb
       - WDB_NO_BROWSER_AUTO_OPEN=True
       - DJANGO_SETTINGS_MODULE=paxful.settings
